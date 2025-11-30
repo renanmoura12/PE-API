@@ -1,5 +1,4 @@
 absl-py==2.3.1
-altgraph @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/altgraph-0.17.2-py2.py3-none-any.whl
 annotated-doc==0.0.3
 annotated-types==0.7.0
 anyio==4.9.0
@@ -32,7 +31,6 @@ fastjsonschema==2.21.1
 flatbuffers==25.2.10
 fonttools==4.60.1
 fqdn==1.5.1
-future @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/future-0.18.2-py3-none-any.whl
 gast==0.6.0
 google-pasta==0.2.0
 grpcio==1.74.0
@@ -68,7 +66,6 @@ kiwisolver==1.4.7
 lark==1.2.2
 libclang==18.1.1
 lightgbm==4.6.0
-macholib @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/macholib-1.15.2-py2.py3-none-any.whl
 Markdown==3.8.2
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
@@ -122,7 +119,6 @@ rpds-py==0.26.0
 scikit-learn==1.6.1
 scipy==1.13.1
 Send2Trash==1.8.3
-six @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/six-1.15.0-py2.py3-none-any.whl
 sniffio==1.3.1
 soupsieve==2.7
 stack-data==0.6.3
