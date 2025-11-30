@@ -1,0 +1,23 @@
+# ambientes
+venv/
+.env
+__pycache__/
+.ipynb_checkpoints/
+
+# dados brutos e notebooks (não sobem para produção)
+*.ipynb
+dados/
+*.csv
+*.xlsx
+
+# caches de python/tensorflow
+*.pyc
+*.pyo
+*.pyd
+*.log
+.cache/
+.history/
+logs/
+
+# se estiver commitando a pasta .venv/.env local
+.venv/
