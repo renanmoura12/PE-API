@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from typing import Optional
+#from tensorflow.keras.models import load_model
 import json
 import os
 
@@ -81,7 +82,26 @@ except Exception as e:
     input_features = []
 
 
+# Rede Neural
 
+#try:
+#    nn_path = os.path.join(MODEL_DIR, "nn_preeclampsia_24f_nosmote.keras")
+#    model_nn = load_model(nn_path)
+#
+#    norm_path = os.path.join(MODEL_DIR, "nn_norm_stats_24f.json")
+#    with open(norm_path) as f:
+#        norm_stats = json.load(f)
+#    nn_mean = np.array(norm_stats["mean"])
+#    nn_std  = np.array(norm_stats["std"]) + 1e-8
+
+#    nn_features = input_features.copy()
+#    print("✅ Rede Neural (24f, sem SMOTE) carregada")
+#except Exception as e:
+#    print(f"⚠ Rede Neural não carregada: {e}")
+#    model_nn = None
+#    nn_mean = None
+#    nn_std = None
+#    nn_features = []
 
 # ============================================================
 #  SCHEMAS
