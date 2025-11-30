@@ -1,0 +1,1 @@
+{"features": ["idadeGestacional2", "peso", "imc", "hipertensao", "diabetes", "origemRacial", "fuma", "historicoFamiliarDiabetes", "riscoBasalPreEclampsia", "mediaIP", "percentilArtUmbilical", "percentilArteriaUterina"], "target": "PreEclampsia", "version": "1.0", "preprocessor": "/Users/renanmoura/Documents/mestrado/PE-AI/models/preprocessor.pkl"}
