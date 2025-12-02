@@ -30,6 +30,9 @@ def preprocess_for_api(input_data, bundle):
 
     if "origemRacial" in df.columns:
         df["origemRacial"] = df["origemRacial"].replace(map_raca)
+
+    if "idade" in df.columns:
+        df["idade"] = pd.to_numeric(df["idade"], errors='coerce')
     
     cols_bool = ["diabetes", "fuma", "hipertensao"]
     for col in cols_bool:
@@ -120,8 +123,8 @@ class InputData(BaseModel):
     historiaObstetricaAnterior: int
     perdasGestacionais: int
     fuma: int
-    idadeGestacional2: float
-    idadeGestacionalCorrigida2: float
+    idadeGestacional: float
+    idadeGestacionalCorrigida: float
     pesoFetal: float
     percentilArteriaUterina: float
     percentilPeso: float
@@ -135,6 +138,7 @@ class InputData(BaseModel):
     temOutraDoenca: int
 
 class InputLGBM(BaseModel):
+    idade: float
     peso: float
     imc: float
     diabetes: int
@@ -146,8 +150,8 @@ class InputLGBM(BaseModel):
     historiaObstetricaAnterior: int
     perdasGestacionais: int
     fuma: int
-    idadeGestacional2: float
-    idadeGestacionalCorrigida2: float
+    idadeGestacional: float
+    idadeGestacionalCorrigida: float
     pesoFetal: float
     percentilArteriaUterina: float
     percentilPeso: float
