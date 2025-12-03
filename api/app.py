@@ -19,51 +19,99 @@ MODEL_DIR = os.path.join(PROJECT_ROOT, "models")
 #  FUNÇÃO DE PRÉ-PROCESSAMENTO (LightGBM) – igual à sua
 # ============================================================
 def preprocess_for_api(input_data, bundle):
+    # monta DataFrame
     if isinstance(input_data, dict):
         df = pd.DataFrame([input_data])
     else:
         df = input_data.copy()
-    
+
+    # mapas vindos do bundle (iguais ao treino)
     map_raca = bundle.get("map_raca", {"Branco": 1, "Pardo": 2, "Preto": 3})
-    map_boolean = bundle.get("map_boolean", {"Sim": 1, "YES": 1, "SIM": 1, "TRUE": 1, "Nao": 1, "NAO": 0, "Não": 0, "NÃO": 0, "FALSE": 0})
-    map_hist_diabetes = bundle.get("map_hist_diabetes", {"Não": 0, "NAO": 0, "NÃO": 0, "Nao": 0, "1º grau": 3, "1° GRAU": 3, "1 GRAU": 3, "2º grau": 2, "2° GRAU": 2, "2 GRAU": 2, "3º grau": 1, "3° GRAU": 1, "3 GRAU": 1})
+    map_boolean = bundle.get(
+        "map_boolean",
+        {"Sim": 1, "YES": 1, "SIM": 1, "TRUE": 1,
+         "Nao": 0, "NAO": 0, "Não": 0, "NÃO": 0, "FALSE": 0}
+    )
+    map_hist_diabetes = bundle.get(
+        "map_hist_diabetes",
+        {"Não": 0, "NAO": 0, "NÃO": 0, "Nao": 0,
+         "1º grau": 3, "1° GRAU": 3, "1 GRAU": 3,
+         "2º grau": 2, "2° GRAU": 2, "2 GRAU": 2,
+         "3º grau": 1, "3° GRAU": 1, "3 GRAU": 1}
+    )
 
+    # 1) raça
     if "origemRacial" in df.columns:
-        df["origemRacial"] = df["origemRacial"].replace(map_raca)
+        df["origemRacial"] = (
+            df["origemRacial"]
+            .astype(str).str.strip()
+            .replace(map_raca)
+        )
 
+    # 2) idade
     if "idade" in df.columns:
-        df["idade"] = pd.to_numeric(df["idade"], errors='coerce')
-    
-    cols_bool = ["diabetes", "fuma", "hipertensao"]
+        df["idade"] = pd.to_numeric(df["idade"], errors="coerce")
+
+    # 3) booleanos (sem 'fuma')
+    cols_bool = ["diabetes", "hipertensao"]
     for col in cols_bool:
         if col in df.columns:
-            df[col] = df[col].replace(map_boolean).astype(float)
-    
+            df[col] = (
+                df[col]
+                .replace(map_boolean)
+                .astype(float)
+            )
+
+    # 4) histórico familiar de diabetes
     if "historicoFamiliarDiabetes" in df.columns:
         df["historicoFamiliarDiabetes"] = (
             df["historicoFamiliarDiabetes"]
             .astype(str).str.strip()
-            .replace(map_hist_diabetes).astype(float)
+            .replace(map_hist_diabetes)
+            .astype(float)
         )
-    
-    for col in df.columns:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-    
+
+    # 5) Tipo de diabetes (igual ao notebook)
+    if "TipoDiabetes" in df.columns:
+        map_tipo_diabetes = {
+            "Diabetes Gestacional": 1,
+            "Tipo 1": 2,
+            "Tipo 2": 3
+        }
+        df["TipoDiabetes"] = (
+            df["TipoDiabetes"]
+            .astype(str).str.strip()
+            .replace(map_tipo_diabetes)
+        )
+        df["TipoDiabetes"] = pd.to_numeric(
+            df["TipoDiabetes"], errors="coerce"
+        ).fillna(0.0)
+
+    # 6) garantir que as novas numéricas sejam numéricas
+    for col in ["percentilArtUmbilical", "circunferenciaAbdominal"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # 7) garantir todas as features do modelo
     input_features = bundle.get("input_features", [])
     for feature in input_features:
         if feature not in df.columns:
             df[feature] = 0
-    
-    df = df.fillna(0)
-    
+
+    # 8) tudo numérico + preencher NaN com 0
+    for col in input_features:
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0.0)
+
+    # 9) aplicar scaler se existir
     scaler = bundle.get("scaler")
     if scaler is not None:
-        df_scaled = scaler.transform(df[input_features])
-        df_final = pd.DataFrame(df_scaled, columns=input_features)
+        X_scaled = scaler.transform(df[input_features])
+        df_final = pd.DataFrame(X_scaled, columns=input_features)
     else:
         df_final = df[input_features]
-    
+
     return df_final
+
 
 # ============================================================
 #  CARREGAR MODELOS
@@ -139,30 +187,24 @@ class InputData(BaseModel):
 
 class InputLGBM(BaseModel):
     idade: float
-    peso: float
     imc: float
     diabetes: int
     hipertensao: int
     pesoPrimeiroTrimestre: float
     origemRacial: str
-    historicoFamiliarDiabetes: int
+    historicoFamiliarDiabetes: str    # aceita "Não", "1º grau", etc.
+    TipoDiabetes: str                 # "Diabetes Gestacional", "Tipo 1", "Tipo 2"
     mediaIP: float
-    historiaObstetricaAnterior: int
-    perdasGestacionais: int
-    fuma: int
+    perdasGestacionais: float
+    peso: float
     idadeGestacional: float
     idadeGestacionalCorrigida: float
     pesoFetal: float
     percentilArteriaUterina: float
+    percentilArtUmbilical: float
     percentilPeso: float
-    temHipertensaoPreExistente: int
-    temEndometriose: int
-    temHipotireoidismo: int
-    temIIC: int
-    temTrombofilia: int
-    temRetocolite: int
-    temGastrite: int
-    temOutraDoenca: int
+    circunferenciaAbdominal: float
+
 
 # ============================================================
 #  ENDPOINTS
